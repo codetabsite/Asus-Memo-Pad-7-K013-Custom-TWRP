@@ -1,4 +1,4 @@
-name:  TWRP Builf
+name: 🟢 TWRP Matrix - ME176C Build
 
 on:
   push:
@@ -16,9 +16,6 @@ on:
         type: boolean
 
 jobs:
-  # ────────────────────────────────────────────
-  # JOB 1: İkonları üret
-  # ────────────────────────────────────────────
   generate-icons:
     name: 🎨 İkon Üret
     runs-on: ubuntu-22.04
@@ -39,9 +36,7 @@ jobs:
 
       - name: Üretilen ikonları kontrol et
         run: |
-          echo "=== Üretilen dosyalar ==="
           ls -lh theme/images/
-          echo "=== Toplam dosya sayısı ==="
           ls theme/images/ | wc -l
 
       - name: İkonları artifact olarak yükle
@@ -51,9 +46,6 @@ jobs:
           path: theme/
           retention-days: 7
 
-  # ────────────────────────────────────────────
-  # JOB 2: TWRP derle
-  # ────────────────────────────────────────────
   build-twrp:
     name: 🔨 TWRP Derle
     runs-on: ubuntu-22.04
@@ -112,7 +104,6 @@ jobs:
           git config --global user.name "TWRP Matrix Builder"
           git config --global color.ui false
 
-      # ── KAYNAK KODU SYNC ──────────────────────────
       - name: LineageOS 16.0 kaynak kodunu başlat
         run: |
           mkdir -p ~/android/twrp
@@ -130,16 +121,11 @@ jobs:
           curl -fsSL \
             "https://raw.githubusercontent.com/me176c-dev/android_device_asus_K013/lineage-16.0/lineage_me176c.xml" \
             -o ~/android/twrp/.repo/local_manifests/lineage_me176c.xml
-          echo "=== Orijinal manifest ==="
-          cat ~/android/twrp/.repo/local_manifests/lineage_me176c.xml
 
       - name: Sorunlu firmware reposunu manifest'ten çıkar
         run: |
-          cd ~/android/twrp
           sed -i '/firmware\/linux/d' \
-            .repo/local_manifests/lineage_me176c.xml
-          echo "=== Güncel manifest ==="
-          cat .repo/local_manifests/lineage_me176c.xml
+            ~/android/twrp/.repo/local_manifests/lineage_me176c.xml
 
       - name: Kaynak kodunu sync et
         run: |
@@ -157,14 +143,13 @@ jobs:
           cd ~/android/twrp
           if [ -f "device/asus/K013/setup-twrp.sh" ]; then
             bash device/asus/K013/setup-twrp.sh
-          else
+          elif [ ! -d "bootable/recovery/.git" ]; then
             git clone \
               --depth=1 \
               https://github.com/me176c-dev/android_bootable_recovery_twrp.git \
               bootable/recovery
           fi
 
-      # ── TEMA UYGULA ──────────────────────────────
       - name: Üretilen ikonları indir
         uses: actions/download-artifact@v4
         with:
@@ -173,22 +158,16 @@ jobs:
 
       - name: Matrix temasını kaynak koda uygula
         run: |
-          echo "=== ui.xml dosyaları aranıyor ==="
-          find ~/android/twrp/bootable/recovery/gui -name "ui.xml" | head -5
-
           for dir in $(find ~/android/twrp/bootable/recovery/gui/theme -maxdepth 1 -type d); do
             if [ -f "$dir/ui.xml" ]; then
-              echo "Tema uygulanıyor: $dir"
               cp /tmp/matrix-theme/ui.xml "$dir/ui.xml"
               if [ -d "$dir/images" ] || [ -d "$dir/res" ]; then
                 TARGET=$(ls -d "$dir/images" "$dir/res" 2>/dev/null | head -1)
                 cp /tmp/matrix-theme/images/*.png "$TARGET/" 2>/dev/null || true
-                echo "İkonlar kopyalandı: $TARGET"
               fi
             fi
           done
 
-      # ── DERLEME ──────────────────────────────────
       - name: Patch uygula
         run: |
           cd ~/android/twrp
@@ -202,14 +181,9 @@ jobs:
           export USE_CCACHE=1
           export CCACHE_DIR=~/.ccache
           export CCACHE_EXEC=$(which ccache)
-
           source build/envsetup.sh
-
           lunch twrp_K013-eng || lunch lineage_me176c-userdebug
-
           make recoveryimage -j$(nproc) 2>&1 | tee /tmp/build.log
-
-          echo "=== Build tamamlandı ==="
           find out/target/product -name "recovery.img" -exec ls -lh {} \;
 
       - name: ccache istatistikleri
@@ -224,7 +198,6 @@ jobs:
           path: /tmp/build.log
           retention-days: 3
 
-      # ── ÇIKTI ────────────────────────────────────
       - name: Recovery image'i bul ve kopyala
         run: |
           RECOVERY=$(find ~/android/twrp/out/target/product -name "recovery.img" | head -1)
@@ -232,7 +205,6 @@ jobs:
             echo "❌ recovery.img bulunamadı!"
             exit 1
           fi
-          echo "✅ Bulundu: $RECOVERY"
           cp "$RECOVERY" ~/twrp-matrix-me176c.img
           ls -lh ~/twrp-matrix-me176c.img
 
@@ -252,7 +224,6 @@ jobs:
           echo "|---------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| Cihaz | ASUS MeMO Pad 7 ME176C (K013) |" >> $GITHUB_STEP_SUMMARY
           echo "| Tema | Matrix Green |" >> $GITHUB_STEP_SUMMARY
-          echo "| İkon stili | Material Design Yuvarlak |" >> $GITHUB_STEP_SUMMARY
           echo "| TWRP versiyonu | 3.3.1 Unofficial |" >> $GITHUB_STEP_SUMMARY
           echo "| Çözünürlük | 800x1280 |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
