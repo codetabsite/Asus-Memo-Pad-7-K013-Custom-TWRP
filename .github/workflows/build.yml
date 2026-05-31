@@ -171,6 +171,8 @@ jobs:
       - name: Patch uygula
         run: |
           cd ~/android/twrp
+          find hardware/me176c -name "Android.bp" -exec \
+            sed -i '/recovery_available/d' {} \;
           if [ -f "device/asus/K013/patches/apply.sh" ]; then
             bash device/asus/K013/patches/apply.sh aosp || true
           fi
