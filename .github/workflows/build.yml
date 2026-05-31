@@ -113,7 +113,7 @@ jobs:
             -b lineage-16.0 \
             --depth=1 \
             --no-clone-bundle \
-            --groups=all,-notdefault,-device,-mips,-x86,-darwin
+            --groups=all,-notdefault,-device,-mips,-darwin
 
       - name: ME176C local manifest ekle
         run: |
@@ -137,6 +137,14 @@ jobs:
             --optimized-fetch \
             --prune \
             --force-sync
+
+      - name: x86 GCC toolchain indir
+        run: |
+          cd ~/android/twrp
+          git clone \
+            --depth=1 \
+            https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/x86/x86_64-linux-android-4.9 \
+            prebuilts/gcc/linux-x86/x86/x86_64-linux-android-4.9
 
       - name: TWRP fork checkout et
         run: |
