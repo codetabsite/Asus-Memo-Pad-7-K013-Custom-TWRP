@@ -140,11 +140,18 @@ jobs:
 
       - name: x86 GCC toolchain indir
         run: |
-          cd ~/android/twrp
-          git clone \
-            --depth=1 \
-            https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/x86/x86_64-linux-android-4.9 \
-            prebuilts/gcc/linux-x86/x86/x86_64-linux-android-4.9
+          TOOLCHAIN=~/android/twrp/prebuilts/gcc/linux-x86/x86/x86_64-linux-android-4.9
+          if [ -d "$TOOLCHAIN/.git" ]; then
+            cd "$TOOLCHAIN"
+            git fetch --depth=1
+            git checkout FETCH_HEAD
+          else
+            rm -rf "$TOOLCHAIN"
+            git clone \
+              --depth=1 \
+              https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/x86/x86_64-linux-android-4.9 \
+              "$TOOLCHAIN"
+          fi
 
       - name: TWRP fork checkout et
         run: |
