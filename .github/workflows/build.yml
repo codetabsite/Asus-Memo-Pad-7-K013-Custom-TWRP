@@ -1,4 +1,4 @@
-name: 🟢 TWRP Matrix - ME176C Build
+name:  TWRP Builf
 
 on:
   push:
@@ -58,7 +58,7 @@ jobs:
     name: 🔨 TWRP Derle
     runs-on: ubuntu-22.04
     needs: generate-icons
-    timeout-minutes: 340  # 5.5 saat (Actions limiti 6 saat)
+    timeout-minutes: 340
 
     steps:
       - name: Repo'yu al
@@ -66,7 +66,6 @@ jobs:
 
       - name: Disk alanını temizle
         run: |
-          # GitHub Actions runner'da yer aç (~30GB ekstra)
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
@@ -128,14 +127,21 @@ jobs:
       - name: ME176C local manifest ekle
         run: |
           mkdir -p ~/android/twrp/.repo/local_manifests
-          # me176c-dev manifest
           curl -fsSL \
             "https://raw.githubusercontent.com/me176c-dev/android_device_asus_K013/lineage-16.0/lineage_me176c.xml" \
             -o ~/android/twrp/.repo/local_manifests/lineage_me176c.xml
-          echo "=== Manifest içeriği ==="
+          echo "=== Orijinal manifest ==="
           cat ~/android/twrp/.repo/local_manifests/lineage_me176c.xml
 
-      - name: Kaynak kodunu sync et (sadece gerekli repolar)
+      - name: Sorunlu firmware reposunu manifest'ten çıkar
+        run: |
+          cd ~/android/twrp
+          sed -i '/firmware\/linux/d' \
+            .repo/local_manifests/lineage_me176c.xml
+          echo "=== Güncel manifest ==="
+          cat .repo/local_manifests/lineage_me176c.xml
+
+      - name: Kaynak kodunu sync et
         run: |
           cd ~/android/twrp
           repo sync \
@@ -145,16 +151,13 @@ jobs:
             --optimized-fetch \
             --prune \
             --force-sync
-        continue-on-error: false
 
       - name: TWRP fork checkout et
         run: |
           cd ~/android/twrp
-          # me176c-dev'in TWRP fork'u
           if [ -f "device/asus/K013/setup-twrp.sh" ]; then
             bash device/asus/K013/setup-twrp.sh
           else
-            # Manuel checkout
             git clone \
               --depth=1 \
               https://github.com/me176c-dev/android_bootable_recovery_twrp.git \
@@ -170,23 +173,13 @@ jobs:
 
       - name: Matrix temasını kaynak koda uygula
         run: |
-          THEME_SRC="~/android/twrp/bootable/recovery/gui/theme"
-
-          # ME176C çözünürlüğü: 800x1280 = portrait_hdpi
-          THEME_DIR="$HOME/android/twrp/bootable/recovery/gui/theme/portrait_hdpi"
-
-          echo "=== Tema dizini ==="
-          ls "$THEME_DIR/" || echo "Dizin bulunamadı, aranıyor..."
-
-          # Doğru dizini bul
+          echo "=== ui.xml dosyaları aranıyor ==="
           find ~/android/twrp/bootable/recovery/gui -name "ui.xml" | head -5
 
-          # ui.xml uygula
           for dir in $(find ~/android/twrp/bootable/recovery/gui/theme -maxdepth 1 -type d); do
             if [ -f "$dir/ui.xml" ]; then
               echo "Tema uygulanıyor: $dir"
               cp /tmp/matrix-theme/ui.xml "$dir/ui.xml"
-              # İkonları kopyala
               if [ -d "$dir/images" ] || [ -d "$dir/res" ]; then
                 TARGET=$(ls -d "$dir/images" "$dir/res" 2>/dev/null | head -1)
                 cp /tmp/matrix-theme/images/*.png "$TARGET/" 2>/dev/null || true
@@ -212,15 +205,11 @@ jobs:
 
           source build/envsetup.sh
 
-          # ME176C için lunch target
           lunch twrp_K013-eng || lunch lineage_me176c-userdebug
 
-          # Sadece recovery image derle
           make recoveryimage -j$(nproc) 2>&1 | tee /tmp/build.log
 
           echo "=== Build tamamlandı ==="
-          ls -lh out/target/product/K013/recovery.img || \
-          ls -lh out/target/product/me176c/recovery.img || \
           find out/target/product -name "recovery.img" -exec ls -lh {} \;
 
       - name: ccache istatistikleri
@@ -261,7 +250,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Özellik | Değer |" >> $GITHUB_STEP_SUMMARY
           echo "|---------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Cihaz | ASUS MeMO Pad 7 ME176C |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cihaz | ASUS MeMO Pad 7 ME176C (K013) |" >> $GITHUB_STEP_SUMMARY
           echo "| Tema | Matrix Green |" >> $GITHUB_STEP_SUMMARY
           echo "| İkon stili | Material Design Yuvarlak |" >> $GITHUB_STEP_SUMMARY
           echo "| TWRP versiyonu | 3.3.1 Unofficial |" >> $GITHUB_STEP_SUMMARY
