@@ -56,7 +56,7 @@ jobs:
   # ────────────────────────────────────────────
   build-twrp:
     name: 🔨 TWRP Derle
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: generate-icons
     timeout-minutes: 340  # 5.5 saat (Actions limiti 6 saat)
 
