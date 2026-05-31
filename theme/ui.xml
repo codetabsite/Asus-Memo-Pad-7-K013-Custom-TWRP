@@ -1,0 +1,304 @@
+<?xml version="1.0"?>
+<recovery>
+    <details>
+        <resolution width="800" height="1280" />
+        <author>me176c-custom</author>
+        <title>Matrix Green</title>
+        <description>Matrix yeşil tema - ME176C için Material Design ikonlarla</description>
+        <preview>preview.jpg</preview>
+    </details>
+
+    <resources>
+        <!-- Fontlar -->
+        <resource name="font"          type="font" filename="Roboto-Regular-32" />
+        <resource name="font_header"   type="font" filename="Roboto-Regular-40" />
+        <resource name="font_small"    type="font" filename="Roboto-Regular-24" />
+
+        <!-- Arka plan ve yüzeyler -->
+        <resource name="base"          type="image" filename="background" />
+        <resource name="header_bg"     type="image" filename="header_bg" />
+        <resource name="side"          type="image" filename="background_side" />
+
+        <!-- Butonlar -->
+        <resource name="main_button"   type="image" filename="button" />
+        <resource name="button_sel"    type="image" filename="button_sel" />
+
+        <!-- İkonlar -->
+        <resource name="file_icon"     type="image" filename="icon_file" />
+        <resource name="folder_icon"   type="image" filename="icon_folder" />
+        <resource name="sdcard_icon"   type="image" filename="icon_sdcard" />
+        <resource name="usb_icon"      type="image" filename="icon_usb" />
+
+        <!-- İlerleme çubuğu -->
+        <resource name="progress_empty" type="image" filename="progress_empty" />
+        <resource name="progress_full"  type="image" filename="progress_full" />
+        <resource name="progress_ani"   type="animation" filename="indeterminate" />
+
+        <!-- Checkbox -->
+        <resource name="checkbox_on"   type="image" filename="checkbox_true" />
+        <resource name="checkbox_off"  type="image" filename="checkbox_false" />
+
+        <!-- Toggle -->
+        <resource name="toggle_on"     type="image" filename="toggle_true" />
+        <resource name="toggle_off"    type="image" filename="toggle_false" />
+
+        <!-- Kaydırıcı -->
+        <resource name="slider_used"   type="image" filename="slider_used" />
+        <resource name="slider_unused" type="image" filename="slider_unused" />
+        <resource name="slider_thumb"  type="image" filename="slider_thumb" />
+
+        <!-- Klavye -->
+        <resource name="key_bg"        type="image" filename="key_background" />
+        <resource name="key_bg_sel"    type="image" filename="key_background_sel" />
+    </resources>
+
+    <!-- ============================================================
+         RENK PALETİ - Matrix Green
+         ============================================================ -->
+    <variables>
+        <!-- Ana renkler -->
+        <variable name="col_background"    value="#0a0f0a" />   <!-- Derin siyah-yeşil -->
+        <variable name="col_surface"       value="#0d1a0d" />   <!-- Yüzey -->
+        <variable name="col_surface2"      value="#112211" />   <!-- Yükseltilmiş yüzey -->
+        <variable name="col_header"        value="#0f1f0f" />   <!-- Header arka plan -->
+
+        <!-- Matrix yeşil tonları -->
+        <variable name="col_primary"       value="#00ff41" />   <!-- Matrix yeşil (parlak) -->
+        <variable name="col_primary_dim"   value="#00cc33" />   <!-- Biraz sönük -->
+        <variable name="col_primary_dark"  value="#007a1f" />   <!-- Koyu yeşil -->
+        <variable name="col_accent"        value="#39ff14" />   <!-- Neon yeşil vurgu -->
+
+        <!-- Metin renkleri -->
+        <variable name="col_text"          value="#00ff41" />   <!-- Ana metin -->
+        <variable name="col_text_dim"      value="#00aa2b" />   <!-- İkincil metin -->
+        <variable name="col_text_header"   value="#00ff41" />   <!-- Header metin -->
+        <variable name="col_text_inv"      value="#0a0f0a" />   <!-- Ters metin (buton üstü) -->
+
+        <!-- Buton renkleri -->
+        <variable name="col_button"        value="#0d2b0d" />   <!-- Buton arka plan -->
+        <variable name="col_button_sel"    value="#00ff41" />   <!-- Seçili buton -->
+        <variable name="col_button_border" value="#00cc33" />   <!-- Buton kenarlık -->
+
+        <!-- Liste -->
+        <variable name="col_list_bg"       value="#0a0f0a" />
+        <variable name="col_list_sel"      value="#0d2b0d" />
+        <variable name="col_separator"     value="#0d2b0d" />
+
+        <!-- İlerleme çubuğu -->
+        <variable name="col_progress_bg"   value="#0d1a0d" />
+        <variable name="col_progress_fill" value="#00ff41" />
+    </variables>
+
+    <!-- ============================================================
+         ANA EKRAN (Home)
+         ============================================================ -->
+    <page name="main">
+        <!-- Arka plan -->
+        <object type="image">
+            <resource>base</resource>
+            <placement x="0" y="0" w="800" h="1280" />
+        </object>
+
+        <!-- Header -->
+        <object type="fill">
+            <color>%col_header%</color>
+            <placement x="0" y="0" w="800" h="96" />
+        </object>
+        <object type="text">
+            <font resource="font_header" color="%col_primary%" />
+            <placement x="0" y="4" w="800" h="56" />
+            <text>TWRP Recovery</text>
+        </object>
+
+        <!-- Versiyon -->
+        <object type="text">
+            <font resource="font_small" color="%col_text_dim%" />
+            <placement x="0" y="58" w="800" h="36" />
+            <text>1.0  2026-06-01</text>
+        </object>
+
+        <!-- Ayırıcı çizgi -->
+        <object type="fill">
+            <color>%col_primary_dark%</color>
+            <placement x="0" y="96" w="800" h="2" />
+        </object>
+
+        <!-- Ana butonlar grid (2x3) -->
+        <!-- Yedekle -->
+        <object type="button">
+            <highlight color="%col_button_sel%" />
+            <image resource="main_button" />
+            <placement x="16"  y="120" w="376" h="160" />
+            <text>Yedekle</text>
+            <font resource="font" color="%col_text%" />
+            <action>page backup</action>
+        </object>
+
+        <!-- Geri Yükle -->
+        <object type="button">
+            <highlight color="%col_button_sel%" />
+            <image resource="main_button" />
+            <placement x="408" y="120" w="376" h="160" />
+            <text>Geri Yükle</text>
+            <font resource="font" color="%col_text%" />
+            <action>page restore</action>
+        </object>
+
+        <!-- Yükle (Flash) -->
+        <object type="button">
+            <highlight color="%col_button_sel%" />
+            <image resource="main_button" />
+            <placement x="16"  y="300" w="376" h="160" />
+            <text>Yükle</text>
+            <font resource="font" color="%col_text%" />
+            <action>page flash</action>
+        </object>
+
+        <!-- Sil -->
+        <object type="button">
+            <highlight color="%col_button_sel%" />
+            <image resource="main_button" />
+            <placement x="408" y="300" w="376" h="160" />
+            <text>Sil / Format</text>
+            <font resource="font" color="%col_text%" />
+            <action>page wipe</action>
+        </object>
+
+        <!-- Bağla -->
+        <object type="button">
+            <highlight color="%col_button_sel%" />
+            <image resource="main_button" />
+            <placement x="16"  y="480" w="376" h="160" />
+            <text>USB Bağla</text>
+            <font resource="font" color="%col_text%" />
+            <action>page mount</action>
+        </object>
+
+        <!-- Ayarlar -->
+        <object type="button">
+            <highlight color="%col_button_sel%" />
+            <image resource="main_button" />
+            <placement x="408" y="480" w="376" h="160" />
+            <text>Ayarlar</text>
+            <font resource="font" color="%col_text%" />
+            <action>page settings</action>
+        </object>
+
+        <!-- Gelişmiş -->
+        <object type="button">
+            <highlight color="%col_button_sel%" />
+            <image resource="main_button" />
+            <placement x="16"  y="660" w="376" h="160" />
+            <text>Gelişmiş</text>
+            <font resource="font" color="%col_text%" />
+            <action>page advanced</action>
+        </object>
+
+        <!-- Yeniden Başlat -->
+        <object type="button">
+            <highlight color="%col_button_sel%" />
+            <image resource="main_button" />
+            <placement x="408" y="660" w="376" h="160" />
+            <text>Yeniden Başlat</text>
+            <font resource="font" color="%col_text%" />
+            <action>page reboot</action>
+        </object>
+
+        <!-- Alt bilgi: pil & depolama -->
+        <object type="fill">
+            <color>%col_header%</color>
+            <placement x="0" y="1184" w="800" h="96" />
+        </object>
+        <object type="fill">
+            <color>%col_primary_dark%</color>
+            <placement x="0" y="1184" w="800" h="2" />
+        </object>
+        <object type="text">
+            <font resource="font_small" color="%col_text_dim%" />
+            <placement x="16" y="1200" w="400" h="64" />
+            <text>Batarya: %tw_battery%</text>
+        </object>
+        <object type="text">
+            <font resource="font_small" color="%col_text_dim%" />
+            <placement x="416" y="1200" w="368" h="64" />
+            <text>%tw_storage_free% MB boş</text>
+        </object>
+    </page>
+
+    <!-- ============================================================
+         YENİDEN BAŞLATMA SAYFASI
+         ============================================================ -->
+    <page name="reboot">
+        <object type="template" name="header" />
+
+        <object type="button">
+            <highlight color="%col_button_sel%" />
+            <image resource="main_button" />
+            <placement x="100" y="180" w="600" h="120" />
+            <text>Sistemi Başlat</text>
+            <font resource="font" color="%col_text%" />
+            <action>reboot</action>
+        </object>
+
+        <object type="button">
+            <highlight color="%col_button_sel%" />
+            <image resource="main_button" />
+            <placement x="100" y="320" w="600" h="120" />
+            <text>Recovery'e Başlat</text>
+            <font resource="font" color="%col_text%" />
+            <action>reboot recovery</action>
+        </object>
+
+        <object type="button">
+            <highlight color="%col_button_sel%" />
+            <image resource="main_button" />
+            <placement x="100" y="460" w="600" h="120" />
+            <text>Bootloader'a Başlat</text>
+            <font resource="font" color="%col_text%" />
+            <action>reboot bootloader</action>
+        </object>
+
+        <object type="button">
+            <highlight color="%col_button_sel%" />
+            <image resource="main_button" />
+            <placement x="100" y="600" w="600" h="120" />
+            <text>Kapat</text>
+            <font resource="font" color="%col_text%" />
+            <action>reboot poweroff</action>
+        </object>
+
+        <object type="button">
+            <highlight color="%col_button_sel%" />
+            <image resource="main_button" />
+            <placement x="100" y="1100" w="600" h="120" />
+            <text>← Geri</text>
+            <font resource="font" color="%col_text_dim%" />
+            <action>page main</action>
+        </object>
+    </page>
+
+    <!-- ============================================================
+         ŞABLONLAR (her sayfada tekrar eden elemanlar)
+         ============================================================ -->
+    <template name="header">
+        <object type="fill">
+            <color>%col_header%</color>
+            <placement x="0" y="0" w="800" h="96" />
+        </object>
+        <object type="fill">
+            <color>%col_primary_dark%</color>
+            <placement x="0" y="96" w="800" h="2" />
+        </object>
+        <object type="text">
+            <font resource="font_header" color="%col_primary%" />
+            <placement x="0" y="4" w="800" h="56" />
+            <text>TWRP Recovery</text>
+        </object>
+        <object type="text">
+            <font resource="font_small" color="%col_text_dim%" />
+            <placement x="0" y="58" w="800" h="36" />
+            <text>1.0  2026-06-01</text>
+        </object>
+    </template>
+
+</recovery>
