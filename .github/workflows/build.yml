@@ -200,6 +200,17 @@ jobs:
           if [ -f "$KCONFIG" ]; then
             sed -i '/CONFIG_RANDOMIZE_BASE/d' "$KCONFIG"
             echo "# CONFIG_RANDOMIZE_BASE is not set" >> "$KCONFIG"
+
+            # Gereksiz driver'ları kapat - boyut küçültme
+            for cfg in               CONFIG_SOUND               CONFIG_SND               CONFIG_DRM_I915               CONFIG_BT               CONFIG_WLAN               CONFIG_BRCMFMAC               CONFIG_IPV6               CONFIG_NFC               CONFIG_MEDIA_SUPPORT               CONFIG_VIDEO_DEV               CONFIG_USB_VIDEO_CLASS; do
+              sed -i "/^${cfg}=/d" "$KCONFIG"
+              sed -i "/^${cfg} /d" "$KCONFIG"
+              echo "# ${cfg} is not set" >> "$KCONFIG"
+            done
+
+            # Kernel panic durumunda ekrana neden yaz
+            sed -i '/CONFIG_PANIC_TIMEOUT/d' "$KCONFIG"
+            echo "CONFIG_PANIC_TIMEOUT=5" >> "$KCONFIG"
           fi
 
           if [ -f "device/asus/K013/patches/apply.sh" ]; then
@@ -216,7 +227,7 @@ jobs:
           export TARGET_KERNEL_CLANG_COMPILE=false
           source build/envsetup.sh
           lunch twrp_K013-eng || lunch lineage_me176c-userdebug
-          make recoveryimage -j$(nproc) KASLR_OFFSET=0 KBUILD_LDFLAGS_MODULE="" 2>&1 | tee /tmp/build.log
+          make recoveryimage -j$(nproc) KASLR_OFFSET=0 KBUILD_LDFLAGS_MODULE="" BOARD_KERNEL_CMDLINE="panic=5 oops=panic" 2>&1 | tee /tmp/build.log
           find out/target/product -name "recovery.img" -exec ls -lh {} \;
 
       - name: ccache istatistikleri
