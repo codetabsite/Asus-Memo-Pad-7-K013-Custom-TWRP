@@ -75,7 +75,7 @@ jobs:
             x11proto-core-dev libx11-dev lib32z1-dev \
             libgl1-mesa-dev libxml2-utils xsltproc unzip \
             python3 python2 bc libssl-dev \
-            rsync lzop ccache schedtool
+            rsync lzop ccache schedtool libelf-dev
           sudo ln -sf /usr/bin/python2 /usr/bin/python
 
       - name: ccache ayarla
