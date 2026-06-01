@@ -187,8 +187,15 @@ jobs:
       - name: Patch uygula
         run: |
           cd ~/android/twrp
+
           find hardware/me176c -name "Android.bp" -exec \
             sed -i '/recovery_available/d' {} \;
+
+          KARCH_MK="kernel/me176c/arch/x86/boot/compressed/Makefile"
+          if [ -f "$KARCH_MK" ]; then
+            grep -q "\-no-pie" "$KARCH_MK" || echo "LDFLAGS_vmlinux += -no-pie" >> "$KARCH_MK"
+          fi
+
           if [ -f "device/asus/K013/patches/apply.sh" ]; then
             bash device/asus/K013/patches/apply.sh aosp || true
           fi
@@ -199,9 +206,11 @@ jobs:
           export USE_CCACHE=1
           export CCACHE_DIR=~/.ccache
           export CCACHE_EXEC=$(which ccache)
+          export ADDITIONAL_KERNEL_FLAGS="KASLR_OFFSET=0"
+          export TARGET_KERNEL_CLANG_COMPILE=false
           source build/envsetup.sh
           lunch twrp_K013-eng || lunch lineage_me176c-userdebug
-          make recoveryimage -j$(nproc) 2>&1 | tee /tmp/build.log
+          make recoveryimage -j$(nproc) KASLR_OFFSET=0 2>&1 | tee /tmp/build.log
           find out/target/product -name "recovery.img" -exec ls -lh {} \;
 
       - name: ccache istatistikleri
