@@ -193,7 +193,13 @@ jobs:
 
           KARCH_MK="kernel/me176c/arch/x86/boot/compressed/Makefile"
           if [ -f "$KARCH_MK" ]; then
-            grep -q "\-no-pie" "$KARCH_MK" || echo "LDFLAGS_vmlinux += -no-pie" >> "$KARCH_MK"
+            sed -i 's/-pie//' "$KARCH_MK" || true
+          fi
+
+          KCONFIG="kernel/me176c/arch/x86/configs/me176c_defconfig"
+          if [ -f "$KCONFIG" ]; then
+            sed -i '/CONFIG_RANDOMIZE_BASE/d' "$KCONFIG"
+            echo "# CONFIG_RANDOMIZE_BASE is not set" >> "$KCONFIG"
           fi
 
           if [ -f "device/asus/K013/patches/apply.sh" ]; then
@@ -210,7 +216,7 @@ jobs:
           export TARGET_KERNEL_CLANG_COMPILE=false
           source build/envsetup.sh
           lunch twrp_K013-eng || lunch lineage_me176c-userdebug
-          make recoveryimage -j$(nproc) KASLR_OFFSET=0 2>&1 | tee /tmp/build.log
+          make recoveryimage -j$(nproc) KASLR_OFFSET=0 KBUILD_LDFLAGS_MODULE="" 2>&1 | tee /tmp/build.log
           find out/target/product -name "recovery.img" -exec ls -lh {} \;
 
       - name: ccache istatistikleri
