@@ -191,9 +191,9 @@ jobs:
           find hardware/me176c -name "Android.bp" -exec \
             sed -i '/recovery_available/d' {} \;
 
-          KARCH_MK="kernel/me176c/arch/x86/boot/compressed/Makefile"
-          if [ -f "$KARCH_MK" ]; then
-            sed -i 's/-pie//' "$KARCH_MK" || true
+          KASLR="kernel/me176c/arch/x86/boot/compressed/kaslr_64.c"
+          if [ -f "$KASLR" ]; then
+            sed -i '/^unsigned long __force_order/d' "$KASLR"
           fi
 
           KCONFIG="kernel/me176c/arch/x86/configs/me176c_defconfig"
